@@ -12,11 +12,13 @@ model = get_model(PRETRAINED_PATH)
 
 @app.route("/predict/", methods=['GET'])
 def predict():
-    statement = request.json.get("statement")
-    sentiment = predict_sentiment(statement, tokenizer, model, MAX_LENGTH)
-    return {
-        "sentiment": sentiment
-    }
+    statements = request.json.get("statements")
+    # statements: list of reviews
+    report = {'Positive': 0, 'Negative': 0}
+    for statement in statements:
+        sentiment = predict_sentiment(statement, tokenizer, model, MAX_LENGTH)
+        report[sentiment] += 1
+    return report
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
